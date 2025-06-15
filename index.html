@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Pounders NFT Collection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004aad;
+            --secondary: #f15e00;
+            --primary-glow: rgba(0, 74, 173, 0.7);
+            --secondary-glow: rgba(241, 94, 0, 0.7);
+            --dark: #0a0a1a;
+        }
+        
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: var(--dark);
+            color: #ffffff;
+            overflow-x: hidden;
+            image-rendering: pixelated;
+        }
+        
+        .pixel-border {
+            box-shadow: 
+                0 0 0 2px var(--dark),
+                0 0 0 4px var(--primary),
+                0 0 0 6px var(--dark),
+                0 0 0 8px var(--secondary);
+        }
+        
+        .pixel-btn {
+            position: relative;
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 
+                0 4px 0 0 #003580,
+                0 8px 0 0 #002b6b;
+            transition: all 0.1s ease;
+            transform: translateY(0);
+        }
+        
+        .pixel-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 0 0 #003580,
+                0 10px 0 0 #002b6b;
+        }
+        
+        .pixel-btn:active {
+            transform: translateY(4px);
+            box-shadow: 
+                0 0px 0 0 #003580,
+                0 4px 0 0 #002b6b;
+        }
+        
+        .pixel-btn-secondary {
+            background-color: var(--secondary);
+            box-shadow: 
+                0 4px 0 0 #c24c00,
+                0 8px 0 0 #9e3d00;
+        }
+        
+        .pixel-btn-secondary:hover {
+            box-shadow: 
+                0 6px 0 0 #c24c00,
+                0 10px 0 0 #9e3d00;
+        }
+        
+        .pixel-btn-secondary:active {
+            box-shadow: 
+                0 0px 0 0 #c24c00,
+                0 4px 0 0 #9e3d00;
+        }
+        
+        .neon-text-blue {
+            color: #fff;
+            text-shadow: 
+                0 0 5px var(--primary-glow),
+                0 0 10px var(--primary-glow),
+                0 0 20px var(--primary-glow);
+        }
+        
+        .neon-text-orange {
+            color: #fff;
+            text-shadow: 
+                0 0 5px var(--secondary-glow),
+                0 0 10px var(--secondary-glow),
+                0 0 20px var(--secondary-glow);
+        }
+        
+        .neon-box {
+            box-shadow: 
+                0 0 5px var(--primary-glow),
+                0 0 10px var(--primary-glow),
+                inset 0 0 5px var(--primary-glow);
+        }
+        
+        .neon-box-orange {
+            box-shadow: 
+                0 0 5px var(--secondary-glow),
+                0 0 10px var(--secondary-glow),
+                inset 0 0 5px var(--secondary-glow);
+        }
+        
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(0, 74, 173, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 74, 173, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .mint-progress {
+            height: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--primary);
+            overflow: hidden;
+        }
+        
+        .mint-progress-bar {
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                var(--primary),
+                var(--primary) 10px,
+                var(--secondary) 10px,
+                var(--secondary) 20px
+            );
+            transition: width 0.5s ease;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .blink {
+            animation: blink 2s step-start infinite;
+        }
+        
+        .nft-card {
+            background: rgba(10, 10, 26, 0.8);
+            border: 2px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .nft-card:hover {
+            transform: translateY(-5px);
+            border: 2px solid var(--secondary);
+            box-shadow: 
+                0 0 10px var(--secondary-glow),
+                0 0 20px var(--secondary-glow);
+        }
+        
+        .pixel-art {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+        
+        /* Scanlines effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0) 50%,
+                rgba(0, 0, 0, 0.1) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+        
+        /* CRT effect */
+        .crt-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(10, 10, 26, 0) 0%,
+                rgba(10, 10, 26, 0.8) 100%
+            );
+            pointer-events: none;
+            z-index: 9998;
+        }
+    </style>
+</head>
+<body class="grid-bg min-h-screen">
+    <!-- CRT and scanline effects -->
+    <div class="scanlines"></div>
+    <div class="crt-effect"></div>
+
+    <header class="fixed top-0 left-0 right-0 z-50 bg-[#0a0a1a]/90 border-b-4 border-[#004aad]">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <!-- Pixel Art Logo -->
+            <div class="w-10 h-10 mr-3 relative">
+                <img src="assets/logo.svg" alt="Logo" class="w-full h-full object-contain" />
+            </div>
+            <span class="text-lg neon-text-blue">PIXEL<span class="neon-text-orange">POUNDERS</span></span>
+        </div>
+            
+            <button id="connectWalletBtn" class="hidden md:block pixel-btn px-6 py-2 text-xs">
+                CONNECT WALLET
+            </button>
+            
+            <button class="md:hidden text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Mobile menu (hidden by default) -->
+        <div id="mobileMenu" class="hidden px-4 py-3 bg-[#0a0a1a] md:hidden">
+            <button id="mobileConnectWalletBtn" class="w-full pixel-btn text-white py-2 px-6 text-xs mb-2">
+                CONNECT WALLET
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 pt-24 pb-16">
+        <section class="flex flex-col md:flex-row items-center justify-between py-10 md:py-20">
+            <div class="w-full md:w-1/2 mb-10 md:mb-0">
+                <h1 class="text-2xl md:text-4xl mb-6">
+                    <span class="neon-text-blue">MINT</span> 
+                    <span class="neon-text-orange">YOUR</span> 
+                    <span class="neon-text-blue">PIXELPOUNDER</span>
+                    <span class="neon-text-orange">NOW</span> 
+                </h1>
+                <p class="text-sm mb-8 leading-relaxed">
+                    JOIN THE POUND. 2500 UNIQUE 1 OF 1 POUNDERS. ONE CHAMPION..
+                </p>
+                
+                <div class="bg-[#0a0a1a] rounded-none p-6 mb-8 border-4 border-[#004aad] neon-box">
+                    <div class="flex justify-between mb-4">
+                        <span class="text-xs">MINTING PROGRESS</span>
+                        <span class="text-xs"><span id="mintedCount">0</span>/<span id="totalSupply">2500</span></span>
+                    </div>
+                    <div class="mint-progress mb-4">
+                        <div class="mint-progress-bar" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="blink">00.0% MINTED</span>
+                        <span>2500 REMAINING</span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button id="mintBtn" class="pixel-btn-secondary text-white py-3 px-8 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                        MINT NOW
+                    </button>
+                    <a href="#collection" class="pixel-btn text-white py-3 px-8 text-center text-sm">
+                        VIEW COLLECTION
+                    </a>
+                </div>
+            </div>
+            
+            <div class="w-full md:w-5/12 relative">
+                <div class="relative z-10 float-animation">
+                    <!-- Featured NFT Pixel Art -->
+                    <div class="w-full aspect-square relative pixel-border overflow-hidden">
+                        <div class="absolute inset-0 bg-[#0a0a1a]"></div>
+                        
+                        <!-- Pixel Art Character -->
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <!-- Head -->
+                            <div class="relative w-32 h-32">
+                                <!-- Face -->
+                                <div class="absolute w-32 h-32 bg-[#f15e00]" style="clip-path: polygon(
+                                    25% 0%, 75% 0%, 100% 25%, 100% 75%, 75% 100%, 25% 100%, 0% 75%, 0% 25%
+                                )"></div>
+                                
+                                <!-- Eyes -->
+                                <div class="absolute w-8 h-8 bg-[#004aad] top-10 left-6" style="clip-path: polygon(
+                                    0% 0%, 100% 0%, 100% 100%, 0% 100%
+                                )"></div>
+                                <div class="absolute w-8 h-8 bg-[#004aad] top-10 right-6" style="clip-path: polygon(
+                                    0% 0%, 100% 0%, 100% 100%, 0% 100%
+                                )"></div>
+                                
+                                <!-- Mouth -->
+                                <div class="absolute w-16 h-4 bg-[#004aad] bottom-8 left-8" style="clip-path: polygon(
+                                    0% 0%, 100% 0%, 75% 100%, 25% 100%
+                                )"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Grid Background -->
+                        <div class="absolute inset-0 opacity-20" style="
+                            background-image: linear-gradient(#004aad 1px, transparent 1px), 
+                            linear-gradient(90deg, #004aad 1px, transparent 1px);
+                            background-size: 16px 16px;
+                        "></div>
+                        
+                        <div class="absolute top-4 right-4 bg-[#f15e00] px-3 py-1 text-xs neon-text-orange">
+                            #387
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Decorative elements -->
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-[#004aad]/20 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-[#f15e00]/20 rounded-full blur-3xl"></div>
+            </div>
+        </section>
+                <section class="py-16">
+            <div class="bg-[#0a0a1a] p-6 md:p-10 border-4 border-[#f15e00] neon-box-orange">
+                <h2 class="text-xl mb-8 neon-text-orange">STORY</h2>
+                <p class="text-sm leading-relaxed">
+                    In a forgotten corner of the blockchain, the Pixel Pounders were born — 2500 unique, hand-coded fighters forged in arcade code and crypto chaos. Raised in the shadow of lag and latency, only the fastest can survive. Step into the ring, tap your way to glory, and fight for the title of Ultimate Pounder.
+                </p>
+            </div>
+        </section>
+<!-- ...existing code... -->
+        <section id="collection" class="py-16">
+            <div class="flex justify-between items-center mb-10">
+                <h2 class="text-xl neon-text-blue">RECENTLY <span class="neon-text-orange">MINTED</span></h2>
+                <div class="hidden md:flex space-x-2">
+                    <button class="p-2 bg-[#004aad] hover:bg-[#003580] transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <button class="p-2 bg-[#004aad] hover:bg-[#003580] transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- NFT Card 1 -->
+                <div class="nft-card overflow-hidden">
+                    <div class="relative">
+                        <div class="w-full h-64 bg-[#0a0a1a] relative">
+                            <!-- Pixel Art 1 -->
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-32 h-32 bg-[#004aad]" style="clip-path: polygon(
+                                    50% 0%, 100% 50%, 50% 100%, 0% 50%
+                                )"></div>
+                                <div class="absolute w-16 h-16 bg-[#f15e00]" style="clip-path: polygon(
+                                    50% 0%, 100% 50%, 50% 100%, 0% 50%
+                                )"></div>
+                            </div>
+                            
+                            <!-- Grid Background -->
+                            <div class="absolute inset-0 opacity-20" style="
+                                background-image: linear-gradient(#004aad 1px, transparent 1px), 
+                                linear-gradient(90deg, #004aad 1px, transparent 1px);
+                                background-size: 16px 16px;
+                            "></div>
+                        </div>
+                        <div class="absolute top-3 right-3 bg-[#f15e00] px-3 py-1 text-xs neon-text-orange">
+                            #001
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-sm mb-2 neon-text-blue">DIAMOND PIXEL</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs">FLOOR PRICE</span>
+                            <span class="text-xs neon-text-orange">0.05 ETH</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NFT Card 2 -->
+                <div class="nft-card overflow-hidden">
+                    <div class="relative">
+                        <div class="w-full h-64 bg-[#0a0a1a] relative">
+                            <!-- Pixel Art 2 -->
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-32 h-32 bg-[#f15e00]" style="clip-path: polygon(
+                                    0% 0%, 100% 0%, 100% 100%, 0% 100%
+                                )"></div>
+                                <div class="absolute w-24 h-24 bg-[#004aad]" style="clip-path: polygon(
+                                    25% 25%, 75% 25%, 75% 75%, 25% 75%
+                                )"></div>
+                                <div class="absolute w-16 h-16 bg-[#f15e00]" style="clip-path: polygon(
+                                    25% 25%, 75% 25%, 75% 75%, 25% 75%
+                                )"></div>
+                            </div>
+                            
+                            <!-- Grid Background -->
+                            <div class="absolute inset-0 opacity-20" style="
+                                background-image: linear-gradient(#f15e00 1px, transparent 1px), 
+                                linear-gradient(90deg, #f15e00 1px, transparent 1px);
+                                background-size: 16px 16px;
+                            "></div>
+                        </div>
+                        <div class="absolute top-3 right-3 bg-[#004aad] px-3 py-1 text-xs neon-text-blue">
+                            #042
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-sm mb-2 neon-text-orange">SQUARE PORTAL</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs">FLOOR PRICE</span>
+                            <span class="text-xs neon-text-blue">0.07 ETH</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NFT Card 3 -->
+                <div class="nft-card overflow-hidden">
+                    <div class="relative">
+                        <div class="w-full h-64 bg-[#0a0a1a] relative">
+                            <!-- Pixel Art 3 -->
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-8 h-8 bg-[#004aad]"></div>
+                                <div class="absolute w-8 h-8 bg-[#004aad]" style="transform: translate(16px, -16px)"></div>
+                                <div class="absolute w-8 h-8 bg-[#004aad]" style="transform: translate(32px, -32px)"></div>
+                                <div class="absolute w-8 h-8 bg-[#f15e00]" style="transform: translate(-16px, 16px)"></div>
+                                <div class="absolute w-8 h-8 bg-[#f15e00]" style="transform: translate(-32px, 32px)"></div>
+                            </div>
+                            
+                            <!-- Grid Background -->
+                            <div class="absolute inset-0 opacity-20" style="
+                                background-image: linear-gradient(#004aad 1px, transparent 1px), 
+                                linear-gradient(90deg, #004aad 1px, transparent 1px);
+                                background-size: 16px 16px;
+                            "></div>
+                        </div>
+                        <div class="absolute top-3 right-3 bg-[#f15e00] px-3 py-1 text-xs neon-text-orange">
+                            #103
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-sm mb-2 neon-text-blue">STAIR MASTER</h3>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs">FLOOR PRICE</span>
+                            <span class="text-xs neon-text-orange">0.09 ETH</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center mt-10">
+                <button class="pixel-btn text-white py-2 px-6 text-xs">
+                    VIEW ALL NFTS
+                </button>
+            </div>
+        </section>
+        
+        <section class="py-16">
+            <div class="bg-[#0a0a1a] p-6 md:p-10 border-4 border-[#004aad] neon-box">
+                <h2 class="text-xl mb-8 neon-text-blue">HOW TO <span class="neon-text-orange">MINT</span></h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-16 h-16 bg-[#004aad] neon-box flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-bold mb-2 neon-text-blue">CONNECT WALLET</h3>
+                        <p class="text-xs">CONNECT YOUR METAMASK OR OTHER WEB3 WALLET TO GET STARTED.</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-16 h-16 bg-[#f15e00] neon-box-orange flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-bold mb-2 neon-text-orange">SELECT NFT</h3>
+                        <p class="text-xs">CHOOSE HOW MANY NFTS YOU WANT TO MINT FROM OUR COLLECTION.</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-16 h-16 bg-[#004aad] neon-box flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-sm font-bold mb-2 neon-text-blue">CONFIRM & MINT</h3>
+                        <p class="text-xs">CONFIRM THE TRANSACTION IN YOUR WALLET AND RECEIVE YOUR UNIQUE NFT.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#0a0a1a] border-t-4 border-[#f15e00] py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-6 md:mb-0">
+                    <div class="w-8 h-8 mr-3 relative">
+                        <div class="absolute inset-0 bg-[#004aad] neon-box" style="clip-path: polygon(
+                            0% 0%, 100% 0%, 100% 20%, 80% 20%, 80% 40%, 60% 40%, 60% 60%, 40% 60%, 40% 80%, 20% 80%, 20% 100%, 0% 100%
+                        )"></div>
+                        <div class="absolute inset-0 bg-[#f15e00] neon-box-orange" style="clip-path: polygon(
+                            80% 20%, 100% 20%, 100% 100%, 20% 100%, 20% 80%, 40% 80%, 40% 60%, 60% 60%, 60% 40%, 80% 40%
+                        )"></div>
+                    </div>
+                    <span class="text-sm neon-text-blue">PIXEL<span class="neon-text-orange">POUNDERS</span></span>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <a href="#" class="text-white hover:text-[#f15e00] transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-white hover:text-[#f15e00] transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="text-white hover:text-[#f15e00] transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19.54 0c1.356 0 2.46 1.104 2.46 2.472v21.528l-2.58-2.28-1.452-1.344-1.536-1.428.636 2.22h-13.608c-1.356 0-2.46-1.104-2.46-2.472v-16.224c0-1.368 1.104-2.472 2.46-2.472h16.08zm-4.632 15.672c2.652-.084 3.672-1.824 3.672-1.824 0-3.864-1.728-6.996-1.728-6.996-1.728-1.296-3.372-1.26-3.372-1.26l-.168.192c2.04.624 2.988 1.524 2.988 1.524-1.248-.684-2.472-1.02-3.612-1.152-.864-.096-1.692-.072-2.424.024l-.204.024c-.42.036-1.44.192-2.724.756-.444.204-.708.348-.708.348s.996-.948 3.156-1.572l-.12-.144s-1.644-.036-3.372 1.26c0 0-1.728 3.132-1.728 6.996 0 0 1.008 1.74 3.66 1.824 0 0 .444-.54.804-.996-1.524-.456-2.1-1.416-2.1-1.416l.336.204.048.036.047.027.014.006.047.027c.3.168.6.3.876.408.492.192 1.08.384 1.764.516.9.168 1.956.228 3.108.012.564-.096 1.14-.264 1.74-.516.42-.156.888-.384 1.38-.708 0 0-.6.984-2.172 1.428.36.456.792.972.792.972zm-5.58-5.604c-.684 0-1.224.6-1.224 1.332 0 .732.552 1.332 1.224 1.332.684 0 1.224-.6 1.224-1.332.012-.732-.54-1.332-1.224-1.332zm4.38 0c-.684 0-1.224.6-1.224 1.332 0 .732.552 1.332 1.224 1.332.684 0 1.224-.6 1.224-1.332 0-.732-.54-1.332-1.224-1.332z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-8 border-t border-[#004aad]/30 text-center text-xs">
+                <p class="blink">&copy; 2025 PIXEL POUNDERS. ALL RIGHTS RESERVED.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Wallet Connection Modal -->
+    <div id="walletModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-[#0a0a1a] max-w-md w-full p-6 border-4 border-[#004aad] neon-box">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-sm neon-text-blue">CONNECT WALLET</h3>
+                    <button id="closeWalletModal" class="text-white hover:text-[#f15e00]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <button class="w-full flex items-center justify-between bg-[#004aad]/30 hover:bg-[#004aad]/50 transition-colors p-4 border-2 border-[#004aad]">
+                        <div class="flex items-center">
+                            <svg class="w-8 h-8 mr-3" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M36.1 7.5H3.9C3.4 7.5 3 7.9 3 8.4V31.6C3 32.1 3.4 32.5 3.9 32.5H36.1C36.6 32.5 37 32.1 37 31.6V8.4C37 7.9 36.6 7.5 36.1 7.5Z" fill="#E2761B" stroke="#E2761B" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M20.5 21.1L13.8 20.2L15 24.2L20.5 21.1Z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M27.1 20.2L20.4 21.1L25.9 24.2L27.1 20.2Z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M15.6 27.5L16.4 23.1L11.6 23.2L15.6 27.5Z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M24.5 23.1L25.3 27.5L29.3 23.2L24.5 23.1Z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M29.3 23.2L25.3 27.5L25.8 30.2L29.1 27.1L29.3 23.2Z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M11.6 23.2L11.8 27.1L15.1 30.2L15.6 27.5L11.6 23.2Z" fill="#E4761B" stroke="#E4761B" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span class="text-xs">METAMASK</span>
+                        </div>
+                        <span class="text-xs neon-text-orange">POPULAR</span>
+                    </button>
+                    
+                    <button class="w-full flex items-center justify-between bg-[#004aad]/30 hover:bg-[#004aad]/50 transition-colors p-4 border-2 border-[#004aad]">
+                        <div class="flex items-center">
+                            <svg class="w-8 h-8 mr-3" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="40" height="40" rx="8" fill="#3B99FC"/>
+                                <path d="M20 8L10 16L20 24L30 16L20 8Z" fill="white"/>
+                                <path d="M10 18L20 26L30 18L20 34L10 18Z" fill="white"/>
+                            </svg>
+                            <span class="text-xs">COINBASE WALLET</span>
+                        </div>
+                    </button>
+                    
+                    <button class="w-full flex items-center justify-between bg-[#004aad]/30 hover:bg-[#004aad]/50 transition-colors p-4 border-2 border-[#004aad]">
+                        <div class="flex items-center">
+                            <svg class="w-8 h-8 mr-3" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="40" height="40" rx="8" fill="#3396FF"/>
+                                <path d="M20 10C14.5 10 10 14.5 10 20C10 25.5 14.5 30 20 30C25.5 30 30 25.5 30 20C30 14.5 25.5 10 20 10ZM20 28C15.6 28 12 24.4 12 20C12 15.6 15.6 12 20 12C24.4 12 28 15.6 28 20C28 24.4 24.4 28 20 28Z" fill="white"/>
+                                <path d="M20 15C17.2 15 15 17.2 15 20C15 22.8 17.2 25 20 25C22.8 25 25 22.8 25 20C25 17.2 22.8 15 20 15ZM20 23C18.3 23 17 21.7 17 20C17 18.3 18.3 17 20 17C21.7 17 23 18.3 23 20C23 21.7 21.7 23 20 23Z" fill="white"/>
+                            </svg>
+                            <span class="text-xs">WALLETCONNECT</span>
+                        </div>
+                    </button>
+                </div>
+                
+                <div class="mt-6 text-center text-xs">
+                    <p>BY CONNECTING YOUR WALLET, YOU AGREE TO OUR <a href="#" class="text-[#f15e00] hover:underline">TERMS OF SERVICE</a> AND <a href="#" class="text-[#f15e00] hover:underline">PRIVACY POLICY</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mint Modal -->
+    <div id="mintModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-[#0a0a1a] max-w-md w-full p-6 border-4 border-[#f15e00] neon-box-orange">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-sm neon-text-orange">MINT NFT</h3>
+                    <button id="closeMintModal" class="text-white hover:text-[#f15e00]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-xs mb-2">QUANTITY</label>
+                    <div class="flex items-center border-4 border-[#f15e00] overflow-hidden">
+                        <button id="decreaseQty" class="px-4 py-2 bg-[#f15e00] hover:bg-[#c24c00] text-white font-bold text-xl">-</button>
+                        <input type="number" id="mintQuantity" class="w-full bg-[#0a0a1a] border-0 text-center text-white text-lg py-2" value="1" min="1" max="10" readonly>
+                        <button id="increaseQty" class="px-4 py-2 bg-[#f15e00] hover:bg-[#c24c00] text-white font-bold text-xl">+</button>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-xs">PRICE PER NFT</span>
+                        <span class="text-xs neon-text-orange">0.05 ETH</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-xs">QUANTITY</span>
+                        <span class="text-xs"><span id="modalQuantity">1</span></span>
+                    </div>
+                    <div class="flex justify-between pt-2 border-t-2 border-[#f15e00]">
+                        <span class="text-xs">TOTAL</span>
+                        <span class="text-xs neon-text-orange"><span id="totalPrice">0.05</span> ETH</span>
+                    </div>
+                </div>
+                
+                <button id="confirmMintBtn" class="w-full pixel-btn-secondary text-white py-3 px-8 text-xs">
+                    CONFIRM & MINT
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+            <div class="bg-[#0a0a1a] max-w-md w-full p-6 border-4 border-[#004aad] neon-box text-center">
+                <div class="w-20 h-20 bg-[#004aad]/20 flex items-center justify-center mx-auto mb-6 neon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-[#f15e00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                
+                <h3 class="text-xl neon-text-blue mb-2">SUCCESS!</h3>
+                <p class="text-xs mb-6 neon-text-orange">YOUR NFT HAS BEEN SUCCESSFULLY MINTED.</p>
+                
+                <button id="closeSuccessModal" class="w-full pixel-btn text-white py-3 px-8 text-xs">
+                    VIEW MY NFT
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const connectWalletBtn = document.getElementById('connectWalletBtn');
+        const mobileConnectWalletBtn = document.getElementById('mobileConnectWalletBtn');
+        const mintBtn = document.getElementById('mintBtn');
+        const walletModal = document.getElementById('walletModal');
+        const closeWalletModal = document.getElementById('closeWalletModal');
+        const mintModal = document.getElementById('mintModal');
+        const closeMintModal = document.getElementById('closeMintModal');
+        const successModal = document.getElementById('successModal');
+        const closeSuccessModal = document.getElementById('closeSuccessModal');
+        const decreaseQty = document.getElementById('decreaseQty');
+        const increaseQty = document.getElementById('increaseQty');
+        const mintQuantity = document.getElementById('mintQuantity');
+        const modalQuantity = document.getElementById('modalQuantity');
+        const totalPrice = document.getElementById('totalPrice');
+        const confirmMintBtn = document.getElementById('confirmMintBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuBtn = document.querySelector('.md\\:hidden');
+        const mintedCount = document.getElementById('mintedCount');
+        const totalSupply = document.getElementById('totalSupply');
+        
+        // Wallet connection state
+        let isWalletConnected = false;
+        
+        // Add arcade sound effects
+        function playSound(type) {
+            // In a real implementation, we would add sound effects here
+            // But we're keeping this as a comment since audio isn't supported
+            console.log(`Playing ${type} sound`);
+        }
+        
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            playSound('click');
+        });
+        
+        // Wallet modal
+        connectWalletBtn.addEventListener('click', () => {
+            walletModal.classList.remove('hidden');
+            playSound('open');
+        });
+        
+        mobileConnectWalletBtn.addEventListener('click', () => {
+            walletModal.classList.remove('hidden');
+            mobileMenu.classList.add('hidden');
+            playSound('open');
+        });
+        
+        closeWalletModal.addEventListener('click', () => {
+            walletModal.classList.add('hidden');
+            playSound('close');
+        });
+        
+        // Wallet connection simulation
+        const walletButtons = walletModal.querySelectorAll('button');
+        walletButtons.forEach(button => {
+            if (button !== closeWalletModal) {
+                button.addEventListener('click', () => {
+                    isWalletConnected = true;
+                    walletModal.classList.add('hidden');
+                    connectWalletBtn.textContent = '0x7a...3f9b';
+                    mobileConnectWalletBtn.textContent = '0x7a...3f9b';
+                    mintBtn.disabled = false;
+                    playSound('success');
+                });
+            }
+        });
+        
+        // Mint modal
+        mintBtn.addEventListener('click', () => {
+            if (isWalletConnected) {
+                mintModal.classList.remove('hidden');
+                playSound('open');
+            } else {
+                walletModal.classList.remove('hidden');
+                playSound('error');
+            }
+        });
+        
+        closeMintModal.addEventListener('click', () => {
+            mintModal.classList.add('hidden');
+            playSound('close');
+        });
+        
+        // Quantity controls
+        decreaseQty.addEventListener('click', () => {
+            let qty = parseInt(mintQuantity.value);
+            if (qty > 1) {
+                qty--;
+                mintQuantity.value = qty;
+                modalQuantity.textContent = qty;
+                updateTotalPrice(qty);
+                playSound('click');
+            } else {
+                playSound('error');
+            }
+        });
+        
+        increaseQty.addEventListener('click', () => {
+            let qty = parseInt(mintQuantity.value);
+            if (qty < 10) {
+                qty++;
+                mintQuantity.value = qty;
+                modalQuantity.textContent = qty;
+                updateTotalPrice(qty);
+                playSound('click');
+            } else {
+                playSound('error');
+            }
+        });
+        
+        function updateTotalPrice(qty) {
+            const pricePerNFT = 0.05;
+            const total = (pricePerNFT * qty).toFixed(2);
+            totalPrice.textContent = total;
+        }
+        
+        // Mint confirmation
+        confirmMintBtn.addEventListener('click', () => {
+            mintModal.classList.add('hidden');
+            playSound('success');
+            
+            // Update minted count
+            const currentMinted = parseInt(mintedCount.textContent);
+            const qty = parseInt(mintQuantity.value);
+            const newMinted = currentMinted + qty;
+            const total = parseInt(totalSupply.textContent);
+            
+            if (newMinted <= total) {
+                mintedCount.textContent = newMinted;
+                
+                // Update progress bar
+                const progressBar = document.querySelector('.mint-progress-bar');
+                const percentage = (newMinted / total) * 100;
+                progressBar.style.width = `${percentage}%`;
+                
+                // Update percentage text
+                const percentageText = document.querySelector('.blink');
+                percentageText.textContent = `${percentage.toFixed(1)}% MINTED`;
+                
+                // Update remaining text
+                const remaining = total - newMinted;
+                percentageText.nextElementSibling.textContent = `${remaining} REMAINING`;
+            }
+            
+            // Show success modal
+            setTimeout(() => {
+                successModal.classList.remove('hidden');
+                playSound('success');
+            }, 500);
+        });
+        
+        closeSuccessModal.addEventListener('click', () => {
+            successModal.classList.add('hidden');
+            playSound('close');
+        });
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === walletModal) {
+                walletModal.classList.add('hidden');
+                playSound('close');
+            }
+            if (e.target === mintModal) {
+                mintModal.classList.add('hidden');
+                playSound('close');
+            }
+            if (e.target === successModal) {
+                successModal.classList.add('hidden');
+                playSound('close');
+            }
+        });
+        
+        // Initialize
+        mintBtn.disabled = !isWalletConnected;
+        
+        // Add pixel cursor effect (optional)
+        document.addEventListener('mousemove', (e) => {
+            // In a real implementation, we might add a custom pixel cursor
+            // But we're keeping this simple for now
+        });
+    </script>
+</body>
+</html>
