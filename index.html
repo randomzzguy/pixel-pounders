@@ -220,10 +220,10 @@
             <span class="text-lg neon-text-blue">PIXEL<span class="neon-text-orange">POUNDERS</span></span>
         </div>
             
-            <button id="connectWalletBtn" class="hidden md:block pixel-btn px-6 py-2 text-xs">
+            <button id="connect-button" class="hidden md:block pixel-btn px-6 py-2 text-xs">
                 CONNECT WALLET
             </button>
-            
+            <p id="wallet-address" class="mt-2 text-green-300 text-sm break-words"></p>
             <button class="md:hidden text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -670,6 +670,8 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/@walletconnect/web3modal@2.7.1/dist/index.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.1/dist/ethers.umd.min.js"></script>
     <script>
         // DOM Elements
         const connectWalletBtn = document.getElementById('connectWalletBtn');
@@ -692,6 +694,39 @@
         const mintedCount = document.getElementById('mintedCount');
         const totalSupply = document.getElementById('totalSupply');
         
+        const projectId = "02c90bdbd057d385924b48e35238d639";
+
+        const { EthereumProvider, Web3Modal } = window.Web3Modal;
+        const { ethers } = window.ethers;
+
+        const config = {
+            projectId,
+            chains: [1], // TEMP: Ethereum Mainnet. Replace with WorldChain chain ID when known
+            metadata: {
+            name: "Pixel Pounders",
+            description: "Mint your fighter. Join the Pound.",
+            url: "https://pixelpounders.xyz",
+            icons: ["https://pixelpounders.xyz/logo.png"],
+            },
+        };
+
+        let provider, signer;
+
+        async function connectWallet() {
+            provider = await EthereumProvider.init(config);
+            await provider.enable();
+
+            const ethersProvider = new ethers.BrowserProvider(provider);
+            signer = await ethersProvider.getSigner();
+            const address = await signer.getAddress();
+
+            document.getElementById("wallet-address").innerText = "Connected: " + address;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("connect-button").addEventListener("click", connectWallet);
+        });
+
         // Wallet connection state
         let isWalletConnected = false;
         
