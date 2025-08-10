@@ -984,8 +984,8 @@
 </div>
 
 
-<script src="https://unpkg.com/@worldcoin/idkit-standalone"></script>
-  <script> // main.js// uses the installed package (bundled by Vite)
+<script src="https://unpkg.com/@worldcoin/idkit-standalone">
+// main.js// uses the installed package (bundled by Vite)
 
 const APP_ID = 'app_staging_e79acddecf543fdbfaf5f84fb1d9cc05' // <- set this
 const ACTION = 'connect-worldid'         // <- set this to the action slug from Developer Portal
@@ -1044,7 +1044,7 @@ btn.addEventListener('click', async () => {
 })
 
  // Version number to force cache refresh when date changes
-        const LAUNCH_DATE_VERSION = '1.2';
+        const LAUNCH_DATE_VERSION = '1.5';
         const VERSION_KEY = 'launchDateVersion';
         const LAUNCH_DATE_KEY = 'launchDate';
         
@@ -1059,7 +1059,7 @@ btn.addEventListener('click', async () => {
             localStorage.removeItem(VERSION_KEY);
             
             // Set launchDate to August 21, 2025, 10:00 AM MYT (+08:00)
-            launchDate = new Date('2025-08-21T10:00:00+08:00');
+            launchDate = new Date('2025-08-22T10:00:00+08:00');
             
             // Store the new date and version
             localStorage.setItem(LAUNCH_DATE_KEY, launchDate.getTime());
