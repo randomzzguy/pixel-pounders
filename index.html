@@ -918,6 +918,9 @@
                 </button>
                 <div id="status"></div>
             </div>
+            <iframe id="worldIdFrame"
+        src="https://id.worldcoin.org/verify?app_id=app_staging_e79acddecf543fdbfaf5f84fb1d9cc05&action=connect-worldid&verification_level=orb"
+        style="display:none;"></iframe>
             
             <p class="cyber-subtitle">Round 1 Starts In…</p>
         </div>
@@ -983,53 +986,37 @@
     </div>
 </div>
 
-<!-- 1️⃣ World ID SDK -->
-<script src="https://unpkg.com/@worldcoin/idkit-standalone@1.3.0/dist/index.umd.js"
-        onload="initWorldID()"></script>
-
 <script>
-function initWorldID() {
-  const APP_ID = 'app_staging_e79acddecf543fdbfaf5f84fb1d9cc05';
-  const ACTION = 'connect-worldid';
+const APP_ID = "app_50f987caae8c9d4100909b4ac9257620"; // from Worldcoin dashboard
+const REDIRECT_URI = "https://pixelpounders.xyz/callback.html";
 
-  const statusEl = document.getElementById('status');
-  const btn = document.getElementById('connectBtn');
-
-  function updateStatus(t) { statusEl.textContent = t; }
-
-  if (window.IDKit) {
-    const widget = window.IDKit.open({
-      app_id: APP_ID,
-      action: ACTION,
-      signal: 'session_' + Math.random().toString(36).slice(2, 9),
-      action_description: 'Verify your World ID',
-      verification_level: 'orb',
-      handleVerify: async (result) => {
-        updateStatus('Sending proof to server for verification...');
-        const resp = await fetch('/api/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...result, action: ACTION })
-        });
-        if (!resp.ok) {
-          updateStatus('Server verification failed.');
-          return;
-        }
-        const json = await resp.json();
-        updateStatus(json.success ? 'Verified ✅' : 'Not verified ❌');
-      },
-      onError: (e) => {
-        updateStatus('Error: ' + (e?.message || e));
-      }
-    });
-
-    btn.addEventListener('click', () => widget.open());
-  } else {
-    updateStatus('World ID failed to load');
-    btn.disabled = true;
-  }
+function generateRandomString(length = 32) {
+  const array = new Uint8Array(length);
+  crypto.getRandomValues(array);
+  return Array.from(array, dec => dec.toString(16).padStart(2, "0")).join("");
 }
+
+document.getElementById("connectBtn").addEventListener("click", () => {
+  const state = generateRandomString(16);
+  sessionStorage.setItem("worldid_state", state);
+
+  const authorizeUrl = new URL("https://id.worldcoin.org/authorize");
+  authorizeUrl.searchParams.set("response_type", "code");
+  authorizeUrl.searchParams.set("scope", "openid");
+  authorizeUrl.searchParams.set("client_id", APP_ID);
+  authorizeUrl.searchParams.set("redirect_uri", REDIRECT_URI);
+  authorizeUrl.searchParams.set("state", state);
+
+  // Debug logging
+  console.log("🔍 World ID Debug Info:");
+  console.log("Client ID:", APP_ID);
+  console.log("Redirect URI:", REDIRECT_URI);
+  console.log("Full Authorization URL:", authorizeUrl.toString());
+
+  window.location.href = authorizeUrl.toString();
+});
 </script>
+
 
 <!-- 2️⃣ Countdown Timer -->
 <script>

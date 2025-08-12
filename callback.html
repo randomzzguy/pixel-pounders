@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>World ID Callback</title>
+</head>
+<body>
+  <div id="status">Processing World ID verification...</div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const state = params.get("state");
+    const savedState = sessionStorage.getItem("worldid_state");
+
+    if (!code || !state || state !== savedState) {
+      document.getElementById("status").textContent = "Invalid state or missing code.";
+    } else {
+      fetch("/api/exchange-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById("status").textContent = "✅ Verified with World ID";
+        } else {
+          document.getElementById("status").textContent = "❌ Verification failed";
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("status").textContent = "Error verifying World ID.";
+      });
+    }
+  </script>
+</body>
+</html>
