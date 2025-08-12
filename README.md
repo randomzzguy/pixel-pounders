@@ -15,8 +15,8 @@ A countdown website with World ID authentication integration for the Pixel Pound
 2. **Set Environment Variables**
    In Vercel Dashboard → Project Settings → Environment Variables:
    ```
-   WORLDID_CLIENT_ID=app_50f987caae8c9d4100909b4ac9257620
-   WORLDID_CLIENT_SECRET=sk_9127dd62112bbb00a86ccc8846dd357f92dcf6a448bef91e
+   WORLDID_CLIENT_ID=your_app_id_here
+   WORLDID_CLIENT_SECRET=your_client_secret_here
    ```
 
 3. **Custom Domain Setup**
@@ -48,7 +48,7 @@ A countdown website with World ID authentication integration for the Pixel Pound
 ├── vercel.json             # Vercel deployment config
 ├── index.html              # Main countdown page
 ├── callback.html           # World ID OAuth callback
-├── debug.html              # Debug/testing page
+
 ├── api/
 │   ├── exchange-token.js   # Token exchange endpoint
 │   └── verify.js           # Verification endpoint
@@ -86,9 +86,9 @@ A countdown website with World ID authentication integration for the Pixel Pound
 
 ### Debug Tools
 
-- Visit `/debug.html` for configuration testing
 - Check browser console for detailed logs
 - Use Network tab to inspect API calls
+- Verify environment variables in Vercel Dashboard
 
 ### Support
 
