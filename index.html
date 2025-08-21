@@ -988,7 +988,7 @@
 
 <script>
 const APP_ID = "app_50f987caae8c9d4100909b4ac9257620"; // from Worldcoin dashboard
-const REDIRECT_URI = "https://pixelpounders.xyz/callback.html"; // production callback page
+const REDIRECT_URI = "https://pixelpounders.xyz/"; // redirect back to main page
 
 function generateRandomString(length = 32) {
   const array = new Uint8Array(length);
@@ -1012,6 +1012,23 @@ document.getElementById("connectBtn").addEventListener("click", () => {
 
 // Check for World ID verification status on page load
 function checkVerificationStatus() {
+  // First check if this is a callback from World ID
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  const state = urlParams.get('state');
+  
+  console.log('Checking verification status...');
+  console.log('URL params:', window.location.search);
+  console.log('Code:', code);
+  console.log('State:', state);
+  
+  if (code && state) {
+    console.log('Detected World ID callback, processing verification...');
+    // This is a callback from World ID, process the verification
+    handleWorldIdCallback(code, state);
+    return;
+  }
+  
   const verificationData = localStorage.getItem("worldid_verification");
   const connectBtn = document.getElementById("connectBtn");
   
@@ -1044,6 +1061,119 @@ function checkVerificationStatus() {
       localStorage.removeItem("worldid_verification");
     }
   }
+}
+
+// Handle World ID OAuth callback
+async function handleWorldIdCallback(code, state) {
+  const connectBtn = document.getElementById('connectBtn');
+  
+  // Show processing state
+  connectBtn.innerHTML = `
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+    </svg>
+    🔄 Verifying...
+  `;
+  connectBtn.style.background = "linear-gradient(45deg, #f59e0b, #f59e0b)";
+  connectBtn.style.borderColor = "#f59e0b";
+  connectBtn.style.color = "#ffffff";
+  connectBtn.disabled = true;
+  
+  try {
+    // Verify the state parameter
+    const storedState = sessionStorage.getItem('worldid_state');
+    console.log('Stored state:', storedState);
+    console.log('Received state:', state);
+    
+    if (state !== storedState) {
+      console.error('State mismatch! Stored:', storedState, 'Received:', state);
+      throw new Error('Invalid state parameter');
+    }
+    
+    console.log('State verification passed, exchanging code for token...');
+    
+    // Exchange code for token using the API
+     console.log('Making API request to /api/exchange-token with code:', code);
+     const response = await fetch('/api/exchange-token', {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/json',
+       },
+       body: JSON.stringify({ code })
+     });
+     
+     console.log('API response status:', response.status);
+     console.log('API response ok:', response.ok);
+     
+     if (!response.ok) {
+       const errorText = await response.text();
+       console.error('API error response:', errorText);
+       throw new Error(`Failed to exchange code for token: ${response.status} ${errorText}`);
+     }
+     
+     const tokenData = await response.json();
+     console.log('Token exchange successful:', tokenData);
+    
+    // Store verification data
+     const verificationData = {
+       verified: true,
+       timestamp: new Date().toISOString(),
+       tokenData: tokenData
+     };
+     console.log('Storing verification data:', verificationData);
+     localStorage.setItem('worldid_verification', JSON.stringify(verificationData));
+     
+     // Update button to verified state
+     console.log('Updating button to verified state...');
+     connectBtn.innerHTML = `
+       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+       </svg>
+       ✅ Verified with World ID
+     `;
+     connectBtn.style.background = "linear-gradient(45deg, #0a5a0a, #1a8a1a)";
+     connectBtn.style.borderColor = "#00ff00";
+     connectBtn.style.color = "#00ff00";
+     connectBtn.disabled = true;
+     connectBtn.style.cursor = "default";
+     
+     console.log('World ID verification successful:', verificationData);
+     console.log('Button updated successfully');
+     
+     // Clean up URL parameters
+     window.history.replaceState({}, document.title, window.location.pathname);
+     console.log('URL parameters cleaned up');
+    
+  } catch (error) {
+    console.error('World ID verification error:', error);
+    console.error('Error details:', error.message);
+    console.error('Error stack:', error.stack);
+    
+    // Reset button to original state
+    console.log('Updating button to error state...');
+    connectBtn.innerHTML = `
+      <svg class="icon" viewBox="0 0 600.1 600" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-miterlimit="16.1" stroke-width="56.2" fill-opacity="0" d="M308.5,28.2c143.5,4.4,259,119.9,263.4,263.4,4.8,156.2-124.1,285-280.2,280.2-143.5-4.4-259-119.9-263.4-263.4C23.5,152.3,152.3,23.4,308.5,28.2Z"/>
+        <path stroke-linecap="round" stroke-miterlimit="16.1" stroke-width="56.2" fill-opacity="0" d="M528,159.6l-233.8.4c-77.4,0-140.2,62.8-140.2,140.2s62.8,140.2,140.2,140.2h225.2"/>
+        <path stroke-linecap="round" stroke-miterlimit="16.1" stroke-width="56.2" fill-opacity="0" d="M30.4,300h540.1"/>
+      </svg>
+      Connect World ID
+    `;
+    connectBtn.style.background = "linear-gradient(45deg, #0a0a0a, #1a1a1a)";
+    connectBtn.style.borderColor = "#f15e00";
+    connectBtn.style.color = "#f15e00";
+    connectBtn.disabled = false;
+    connectBtn.style.cursor = "grab";
+    
+    // Clean up URL parameters
+    window.history.replaceState({}, document.title, window.location.pathname);
+    console.log('URL parameters cleaned up after error');
+    
+    alert('World ID verification failed. Please try again.');
+  }
+  
+  // Clean up stored state
+  sessionStorage.removeItem('worldid_state');
 }
 
 // Run verification check when page loads
