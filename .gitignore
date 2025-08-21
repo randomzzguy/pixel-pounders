@@ -143,3 +143,4 @@ PIPFILE.lock
 *.exe
 *.o
 *.so
+.vercel

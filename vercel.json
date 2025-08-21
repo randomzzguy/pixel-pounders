@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "api/exchange-token.js": {
-      "runtime": "nodejs20@20.9.0"
+      "runtime": "nodejs18.x"
     }
   },
   "rewrites": [
