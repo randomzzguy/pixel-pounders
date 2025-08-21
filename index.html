@@ -1009,6 +1009,47 @@ document.getElementById("connectBtn").addEventListener("click", () => {
 
   window.location.href = authorizeUrl.toString();
 });
+
+// Check for World ID verification status on page load
+function checkVerificationStatus() {
+  const verificationData = localStorage.getItem("worldid_verification");
+  const connectBtn = document.getElementById("connectBtn");
+  
+  if (verificationData) {
+    try {
+      const data = JSON.parse(verificationData);
+      if (data.verified) {
+        // Update button to show verified status
+        connectBtn.innerHTML = `
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          ✅ Verified with World ID
+        `;
+        connectBtn.style.background = "linear-gradient(45deg, #0a5a0a, #1a8a1a)";
+        connectBtn.style.borderColor = "#00ff00";
+        connectBtn.style.color = "#00ff00";
+        connectBtn.disabled = true;
+        connectBtn.style.cursor = "default";
+        
+        // Display user info if available
+        if (data.tokenData && data.tokenData.access_token) {
+          console.log("World ID verification data:", data);
+          // You can extract wallet address or other user data here
+          // Example: const walletAddress = data.tokenData.wallet_address;
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing verification data:", error);
+      localStorage.removeItem("worldid_verification");
+    }
+  }
+}
+
+// Run verification check when page loads
+document.addEventListener("DOMContentLoaded", checkVerificationStatus);
+// Also run it immediately in case DOMContentLoaded already fired
+checkVerificationStatus();
 </script>
 
 
