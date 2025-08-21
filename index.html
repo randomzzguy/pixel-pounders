@@ -916,9 +916,11 @@
                     </svg>
                     Connect World ID
                 </button>
-                <br>
                 <div id="status"></div>
             </div>
+            <iframe id="worldIdFrame"
+        src="https://id.worldcoin.org/verify?app_id=app_staging_e79acddecf543fdbfaf5f84fb1d9cc05&action=connect-worldid&verification_level=orb"
+        style="display:none;"></iframe>
             
             <p class="cyber-subtitle">Round 1 Starts In…</p>
         </div>
@@ -985,8 +987,8 @@
 </div>
 
 <script>
-const APP_ID = "app_50f987caae8c9d4100909b4ac9257620"; // from Worldcoin dashboard
-const REDIRECT_URI = "https://pixelpounders.xyz/callback.html";
+const APP_ID = "app_staging_e79acddecf543fdbfaf5f84fb1d9cc05"; // from Worldcoin dashboard
+const REDIRECT_URI = "https://pixel-pounders.vercel.app/callback.html"; // change this to your deployed callback page
 
 function generateRandomString(length = 32) {
   const array = new Uint8Array(length);
@@ -1005,12 +1007,6 @@ document.getElementById("connectBtn").addEventListener("click", () => {
   authorizeUrl.searchParams.set("redirect_uri", REDIRECT_URI);
   authorizeUrl.searchParams.set("state", state);
 
-  // Debug logging
-  console.log("🔍 World ID Debug Info:");
-  console.log("Client ID:", APP_ID);
-  console.log("Redirect URI:", REDIRECT_URI);
-  console.log("Full Authorization URL:", authorizeUrl.toString());
-
   window.location.href = authorizeUrl.toString();
 });
 </script>
@@ -1018,7 +1014,7 @@ document.getElementById("connectBtn").addEventListener("click", () => {
 
 <!-- 2️⃣ Countdown Timer -->
 <script>
-const LAUNCH_DATE_VERSION = '1.5';
+const LAUNCH_DATE_VERSION = '4.0';
 const VERSION_KEY = 'launchDateVersion';
 const LAUNCH_DATE_KEY = 'launchDate';
 
@@ -1029,7 +1025,7 @@ const storedLaunchDate = localStorage.getItem(LAUNCH_DATE_KEY);
 if (storedVersion !== LAUNCH_DATE_VERSION || !storedLaunchDate) {
   localStorage.removeItem(LAUNCH_DATE_KEY);
   localStorage.removeItem(VERSION_KEY);
-  launchDate = new Date('2025-08-22T10:00:00+08:00');
+  launchDate = new Date('2025-08-31T10:00:00+08:00');
   localStorage.setItem(LAUNCH_DATE_KEY, launchDate.getTime());
   localStorage.setItem(VERSION_KEY, LAUNCH_DATE_VERSION);
 } else {
