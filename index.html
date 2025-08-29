@@ -1185,7 +1185,7 @@ checkVerificationStatus();
 
 <!-- 2️⃣ Countdown Timer -->
 <script>
-const LAUNCH_DATE_VERSION = '4.0';
+const LAUNCH_DATE_VERSION = '5.0';
 const VERSION_KEY = 'launchDateVersion';
 const LAUNCH_DATE_KEY = 'launchDate';
 
@@ -1196,7 +1196,7 @@ const storedLaunchDate = localStorage.getItem(LAUNCH_DATE_KEY);
 if (storedVersion !== LAUNCH_DATE_VERSION || !storedLaunchDate) {
   localStorage.removeItem(LAUNCH_DATE_KEY);
   localStorage.removeItem(VERSION_KEY);
-  launchDate = new Date('2025-08-31T10:00:00+08:00');
+  launchDate = new Date('2025-09-25T10:00:00+08:00');
   localStorage.setItem(LAUNCH_DATE_KEY, launchDate.getTime());
   localStorage.setItem(VERSION_KEY, LAUNCH_DATE_VERSION);
 } else {
